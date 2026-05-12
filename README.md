@@ -6,16 +6,6 @@ An emotionally intelligent, AI-powered wellness companion and personal analytics
 
 MindEase bridges the gap between basic mood trackers and expensive therapy apps by offering a personalized, privacy-first, continuously adapting AI companion. It features intelligent journaling, robust analytics, and a seamlessly calm UI.
 
-## 📸 Interface Previews
-
-| Landing Page | Dashboard Analytics |
-|---|---|
-| ![Landing Page](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop) | ![Dashboard Analytics](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop) |
-
-| AI Therapy Chat | Emotional Heatmap |
-|---|---|
-| ![Chat](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop) | ![Analytics](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop) |
-
 ## 🌟 Core Features
 
 - **Streaming AI Companion:** Real-time, emotionally aware AI that remembers your onboarding goals, typical stress levels, and historical struggles.
