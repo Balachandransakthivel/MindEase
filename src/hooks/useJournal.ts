@@ -8,6 +8,17 @@ const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mindease
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 function getUserId(): string {
+  const storedUser = localStorage.getItem("mindease_user");
+  if (storedUser) {
+    try {
+      const u = JSON.parse(storedUser);
+      if (u && u.id) {
+        return u.id;
+      }
+    } catch (e) {
+      console.error("Error parsing user ID in useJournal:", e);
+    }
+  }
   let id = localStorage.getItem("mindease_device_id");
   if (!id) {
     id = `device_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -38,7 +49,8 @@ export function useJournal() {
       console.error("Load journal error:", error);
       // Fallback to mock data
       const stored = localStorage.getItem("mindease_journals");
-      setEntries(stored ? JSON.parse(stored) : MOCK_JOURNAL_ENTRIES);
+      const isDemo = userId === "user_001" || userId.includes("demo") || userId.includes("alex");
+      setEntries(stored ? JSON.parse(stored) : (isDemo ? MOCK_JOURNAL_ENTRIES : []));
     } else if (data && data.length > 0) {
       const mapped: JournalEntry[] = data.map((e) => ({
         id: e.id,
@@ -52,8 +64,9 @@ export function useJournal() {
       }));
       setEntries(mapped);
     } else {
-      // New user — show mock entries locally only
-      setEntries(MOCK_JOURNAL_ENTRIES);
+      // New user — show mock entries locally only if demo/mock account
+      const isDemo = userId === "user_001" || userId.includes("demo") || userId.includes("alex");
+      setEntries(isDemo ? MOCK_JOURNAL_ENTRIES : []);
     }
     setIsLoading(false);
   };

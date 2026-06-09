@@ -12,6 +12,7 @@ const MoodTrackerPage = lazy(() => import("@/pages/MoodTrackerPage"));
 const JournalPage = lazy(() => import("@/pages/JournalPage"));
 const AnalyticsPage = lazy(() => import("@/pages/AnalyticsPage"));
 const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
+const BreathingPage = lazy(() => import("@/pages/BreathingPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 function LoadingFallback() {
@@ -75,6 +76,7 @@ export default function App() {
             <Route path="chat" element={<ChatPage />} />
             <Route path="mood" element={<MoodTrackerPage />} />
             <Route path="journal" element={<JournalPage />} />
+            <Route path="breathing" element={<BreathingPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />

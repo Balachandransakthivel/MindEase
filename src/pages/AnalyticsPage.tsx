@@ -1,5 +1,6 @@
 import { useMoodTracker } from "@/hooks/useMoodTracker";
 import { useJournal } from "@/hooks/useJournal";
+import { useNavigate } from "react-router-dom";
 import { WEEKLY_MOOD_DATA, MOOD_OPTIONS, RECOMMENDATIONS } from "@/constants/data";
 import {
   AreaChart,
@@ -57,8 +58,39 @@ const RADAR_DATA = [
 export default function AnalyticsPage() {
   const { entries, averageMoodScore, averageStress, isLoading: isMoodLoading } = useMoodTracker();
   const { entries: journals, isLoading: isJournalLoading } = useJournal();
+  const navigate = useNavigate();
 
   const isLoading = isMoodLoading || isJournalLoading;
+
+  const chartData = entries.length > 0
+    ? [...entries]
+        .slice(0, 7)
+        .reverse()
+        .map((e) => ({
+          day: new Date(e.date).toLocaleDateString("en-US", { weekday: "short" }),
+          moodScore: e.moodScore,
+          stressLevel: e.stressLevel,
+          sleepHours: e.sleepHours,
+        }))
+    : WEEKLY_MOOD_DATA;
+
+  const avgSleepHours = entries.length
+    ? entries.reduce((s, e) => s + e.sleepHours, 0) / entries.length
+    : 7.5;
+  const avgEnergyLevel = entries.length
+    ? entries.reduce((s, e) => s + e.energyLevel, 0) / entries.length
+    : 70;
+  
+  const radarData = entries.length > 0
+    ? [
+        { subject: "Mood", value: averageMoodScore },
+        { subject: "Sleep", value: Math.min(100, Math.round((avgSleepHours / 8) * 100)) },
+        { subject: "Energy", value: Math.round(avgEnergyLevel) },
+        { subject: "Focus", value: Math.round((averageMoodScore + (100 - averageStress)) / 2) },
+        { subject: "Social", value: Math.round(averageMoodScore * 0.9) },
+        { subject: "Calm", value: 100 - averageStress },
+      ]
+    : RADAR_DATA;
 
   const moodDist = MOOD_OPTIONS.map((opt) => ({
     name: `${opt.emoji} ${opt.label}`,
@@ -93,18 +125,85 @@ export default function AnalyticsPage() {
 
       {/* AI Wellness Summary */}
       {!isLoading && entries.length > 0 && (
-        <div className="bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden group">
+        <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-300" />
-              <h2 className="font-serif font-semibold text-lg">AI Wellness Summary</h2>
+              <h2 className="font-serif font-semibold text-lg">AI Wellness Insights</h2>
             </div>
-            <p className="text-white/90 leading-relaxed text-sm md:text-base">
-              {averageMoodScore > 60 
-                ? "You've appeared calmer and more positive this week compared to last week. Your stress levels are well-managed, and maintaining your sleep routine is really paying off. Keep nurturing these good habits!" 
-                : "It looks like this week has been a bit challenging. I'm noticing elevated stress patterns. Remember to give yourself grace, take short mental breaks, and perhaps try a brief mindfulness exercise."}
-            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Summary Status Card */}
+              <div className="glass-dark rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs text-white/60 uppercase tracking-widest font-semibold">Weekly Outlook</span>
+                  <p className="text-lg font-bold mt-1 font-serif">
+                    {averageMoodScore > 60 ? "Positive & Balanced 🌿" : "Elevated Stress ⚡"}
+                  </p>
+                </div>
+                <p className="text-xs text-white/70 mt-4 leading-relaxed font-light">
+                  {averageMoodScore > 60 
+                    ? "Your emotional trends show strong resilience and self-regulation this week."
+                    : "Your indicators suggest a demanding week with high cognitive load."}
+                </p>
+              </div>
+
+              {/* Insights List */}
+              <div className="glass-dark rounded-xl p-4 md:col-span-2 space-y-3 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs text-white/60 uppercase tracking-widest font-semibold">Key Highlights</span>
+                  <ul className="space-y-2 text-xs text-white/90 mt-2.5">
+                    {averageMoodScore > 60 ? (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <span className="text-emerald-300 font-bold">✓</span>
+                          <span>Stress levels are well-managed and within optimal boundaries.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-emerald-300 font-bold">✓</span>
+                          <span>Sleep and mood correlate positively; sleep habits are paying off.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-emerald-300 font-bold">✓</span>
+                          <span>Consistent self-tracking suggests strong habit loop formation.</span>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-300 font-bold">!</span>
+                          <span>Noticing elevated stress patterns over multiple consecutive logs.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-300 font-bold">!</span>
+                          <span>Sleep durations have dropped, directly impacting mood resilience.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-300 font-bold">!</span>
+                          <span>Energy levels are fluctuating; consider prioritizing mental recovery.</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-white/60 uppercase font-semibold">Recommended Action:</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-white/20 rounded-full">
+                      {averageMoodScore > 60 ? "Maintain Routine 🧘" : "Try Box Breathing 🫁"}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => navigate(averageMoodScore > 60 ? "/app/journal" : "/app/breathing")}
+                    className="text-xs font-semibold text-amber-200 hover:text-white hover:underline flex items-center gap-1 transition-colors"
+                  >
+                    Start Session →
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -153,7 +252,7 @@ export default function AnalyticsPage() {
         <h2 className="font-serif font-semibold text-indigo-900 text-xl mb-1">Weekly Mood Trend</h2>
         <p className="text-gray-400 text-xs mb-5">Mood score and stress levels over the past 7 days</p>
         <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={WEEKLY_MOOD_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="moodGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
@@ -228,7 +327,7 @@ export default function AnalyticsPage() {
               <XAxis type="number" dataKey="sleepHours" name="Sleep" unit="h" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={['dataMin - 1', 'dataMax + 1']} />
               <YAxis type="number" dataKey="moodScore" name="Mood" unit="%" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[0, 100]} />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb", fontSize: 12, padding: "8px 12px" }} />
-              <Scatter name="Correlation" data={WEEKLY_MOOD_DATA} fill="#8b5cf6" />
+              <Scatter name="Correlation" data={chartData} fill="#8b5cf6" />
             </ScatterChart>
           </ResponsiveContainer>
         </div>
@@ -240,7 +339,7 @@ export default function AnalyticsPage() {
           <h2 className="font-serif font-semibold text-indigo-900 text-lg mb-1">Sleep Analysis</h2>
           <p className="text-gray-400 text-xs mb-4">Hours slept per night</p>
           <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={WEEKLY_MOOD_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
               <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[0, 12]} />
@@ -258,7 +357,7 @@ export default function AnalyticsPage() {
           <h2 className="font-serif font-semibold text-indigo-900 text-lg mb-1">Wellness Radar</h2>
           <p className="text-gray-400 text-xs mb-4">Overall emotional balance score</p>
           <ResponsiveContainer width="100%" height={180}>
-            <RadarChart data={RADAR_DATA}>
+            <RadarChart data={radarData}>
               <PolarGrid stroke="#e5e7eb" />
               <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: "#6b7280" }} />
               <Radar name="Wellness" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.2} strokeWidth={2} />

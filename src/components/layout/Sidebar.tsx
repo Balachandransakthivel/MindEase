@@ -10,6 +10,7 @@ import {
   LogOut,
   X,
   Sparkles,
+  Wind,
 } from "lucide-react";
 import aiAvatar from "@/assets/ai-avatar.png";
 
@@ -18,6 +19,7 @@ const NAV = [
   { to: "/app/chat", label: "AI Therapist", icon: MessageCircleHeart },
   { to: "/app/mood", label: "Mood Tracker", icon: Smile },
   { to: "/app/journal", label: "My Journal", icon: BookOpen },
+  { to: "/app/breathing", label: "Breathing Space", icon: Wind },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
 ];
 

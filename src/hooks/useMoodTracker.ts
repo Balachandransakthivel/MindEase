@@ -4,6 +4,17 @@ import { MOCK_MOOD_ENTRIES } from "@/constants/data";
 import { supabase } from "@/lib/supabase";
 
 function getUserId(): string {
+  const storedUser = localStorage.getItem("mindease_user");
+  if (storedUser) {
+    try {
+      const u = JSON.parse(storedUser);
+      if (u && u.id) {
+        return u.id;
+      }
+    } catch (e) {
+      console.error("Error parsing user ID in useMoodTracker:", e);
+    }
+  }
   let id = localStorage.getItem("mindease_device_id");
   if (!id) {
     id = `device_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -32,7 +43,8 @@ export function useMoodTracker() {
     if (error) {
       console.error("Load mood error:", error);
       const stored = localStorage.getItem("mindease_moods");
-      setEntries(stored ? JSON.parse(stored) : MOCK_MOOD_ENTRIES);
+      const isDemo = userId === "user_001" || userId.includes("demo") || userId.includes("alex");
+      setEntries(stored ? JSON.parse(stored) : (isDemo ? MOCK_MOOD_ENTRIES : []));
     } else if (data && data.length > 0) {
       const mapped: MoodEntry[] = data.map((e) => ({
         id: e.id,
@@ -46,7 +58,8 @@ export function useMoodTracker() {
       }));
       setEntries(mapped);
     } else {
-      setEntries(MOCK_MOOD_ENTRIES);
+      const isDemo = userId === "user_001" || userId.includes("demo") || userId.includes("alex");
+      setEntries(isDemo ? MOCK_MOOD_ENTRIES : []);
     }
     setIsLoading(false);
   };

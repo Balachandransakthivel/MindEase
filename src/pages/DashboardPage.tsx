@@ -122,28 +122,41 @@ export default function DashboardPage() {
             </button>
           </div>
           <div className="space-y-2.5">
-            {entries.slice(0, 4).map((entry) => {
-              const opt = MOOD_OPTIONS.find((m) => m.type === entry.mood);
-              return (
-                <div key={entry.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-                  <span className="text-xl">{opt?.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">{opt?.label}</span>
-                      <span className="text-xs text-gray-400">
-                        {new Date(entry.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-                      </span>
-                    </div>
-                    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${entry.moodScore}%`, backgroundColor: opt?.color }}
-                      />
+            {entries.length === 0 ? (
+              <div className="text-center py-8 px-4 border border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                <p className="text-sm text-gray-500 font-medium">No moods logged yet</p>
+                <p className="text-xs text-gray-400 mt-1">Start tracking to see your patterns here</p>
+                <button
+                  onClick={() => navigate("/app/mood")}
+                  className="mt-3 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+                >
+                  Log Your First Mood 🌿
+                </button>
+              </div>
+            ) : (
+              entries.slice(0, 4).map((entry) => {
+                const opt = MOOD_OPTIONS.find((m) => m.type === entry.mood);
+                return (
+                  <div key={entry.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                    <span className="text-xl">{opt?.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700">{opt?.label}</span>
+                        <span className="text-xs text-gray-400">
+                          {new Date(entry.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{ width: `${entry.moodScore}%`, backgroundColor: opt?.color }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -176,14 +189,14 @@ export default function DashboardPage() {
       </div>
 
       {/* Latest Journal */}
-      {journals[0] && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-serif font-semibold text-indigo-900 text-lg">Latest Journal</h2>
-            <button onClick={() => navigate("/app/journal")} className="text-violet-600 text-xs font-semibold flex items-center gap-1 hover:underline">
-              View All <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-serif font-semibold text-indigo-900 text-lg">Latest Journal</h2>
+          <button onClick={() => navigate("/app/journal")} className="text-violet-600 text-xs font-semibold flex items-center gap-1 hover:underline">
+            {journals.length ? "View All" : "Write First Entry"} <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+        {journals[0] ? (
           <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
             <div className="flex items-center gap-2 mb-2">
               <span>{MOOD_OPTIONS.find((m) => m.type === journals[0].mood)?.emoji}</span>
@@ -200,8 +213,19 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-8 px-4 border border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+            <p className="text-sm text-gray-500 font-medium">Your journal is empty</p>
+            <p className="text-xs text-gray-400 mt-1">Capture your thoughts and receive AI-powered insights</p>
+            <button
+              onClick={() => navigate("/app/journal")}
+              className="mt-3 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+            >
+              Start Journaling 📓
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Disclaimer */}
       <div className="text-center text-xs text-gray-400 py-2">

@@ -9,6 +9,17 @@ const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function getUserId(): string {
+  const storedUser = localStorage.getItem("mindease_user");
+  if (storedUser) {
+    try {
+      const u = JSON.parse(storedUser);
+      if (u && u.id) {
+        return u.id;
+      }
+    } catch (e) {
+      console.error("Error parsing user ID in useChat:", e);
+    }
+  }
   let id = localStorage.getItem("mindease_device_id");
   if (!id) {
     id = `device_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -256,7 +267,7 @@ export function useChat() {
 
           // Construct emotional memory & onboarding context
           const storedUser = localStorage.getItem("mindease_user");
-          let systemPrompt = "You are MindEase, an AI wellness companion. SAFETY RULES: You are NOT a licensed therapist. Do NOT diagnose, prescribe, or claim medical expertise. If a user expresses self-harm or severe crisis, gently encourage them to contact emergency services and stop the analysis. Do not be manipulative or overly prescriptive.";
+          let systemPrompt = "You are MindEase, an AI wellness companion. SAFETY RULES: You are NOT a licensed therapist. Do NOT diagnose, prescribe, or claim medical expertise. If a user expresses self-harm or severe crisis, gently encourage them to contact emergency services and stop the analysis. Do not be manipulative or overly prescriptive. FORMATTING RULE: Do NOT respond in long paragraphs. Instead, break down your advice and grounding techniques into short, clear bullet points, numbered lists, or bold key points so it is very easy for the user to read and scan.";
           if (storedUser) {
             try {
               const u = JSON.parse(storedUser);

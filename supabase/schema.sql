@@ -62,36 +62,46 @@ ALTER TABLE public.mood_entries ENABLE ROW LEVEL SECURITY;
 -- For production, replace 'user_identifier' checks with auth.uid() when using Supabase Auth.
 
 -- Conversations
-CREATE POLICY "Users can insert their own conversations" 
-ON public.conversations FOR INSERT 
-WITH CHECK (true); -- Requires App Logic to set correct user_identifier
-
-CREATE POLICY "Users can view their own conversations" 
-ON public.conversations FOR SELECT 
-USING (true); -- In a full auth app, change `true` to `user_identifier = auth.uid()::text`
-
-CREATE POLICY "Users can update their own conversations" 
-ON public.conversations FOR UPDATE 
-USING (true);
-
-CREATE POLICY "Users can delete their own conversations" 
-ON public.conversations FOR DELETE 
-USING (true);
+CREATE POLICY "Users can manage their own conversations" 
+ON public.conversations FOR ALL 
+USING (
+    (auth.role() = 'authenticated' AND user_identifier = auth.uid()::text)
+    OR
+    (auth.role() = 'anon' AND (user_identifier = 'user_001' OR user_identifier LIKE 'device_%' OR user_identifier LIKE 'local_%'))
+);
 
 -- Chat Messages
-CREATE POLICY "Users can manage chat messages" 
+CREATE POLICY "Users can manage their own chat messages" 
 ON public.chat_messages FOR ALL 
-USING (true); 
+USING (
+    EXISTS (
+        SELECT 1 FROM public.conversations c
+        WHERE c.id = chat_messages.conversation_id
+        AND (
+            (auth.role() = 'authenticated' AND c.user_identifier = auth.uid()::text)
+            OR
+            (auth.role() = 'anon')
+        )
+    )
+);
 
 -- Journal Entries
-CREATE POLICY "Users can manage journal entries" 
+CREATE POLICY "Users can manage their own journal entries" 
 ON public.journal_entries FOR ALL 
-USING (true);
+USING (
+    (auth.role() = 'authenticated' AND user_identifier = auth.uid()::text)
+    OR
+    (auth.role() = 'anon' AND (user_identifier = 'user_001' OR user_identifier LIKE 'device_%' OR user_identifier LIKE 'local_%'))
+);
 
 -- Mood Entries
-CREATE POLICY "Users can manage mood entries" 
+CREATE POLICY "Users can manage their own mood entries" 
 ON public.mood_entries FOR ALL 
-USING (true);
+USING (
+    (auth.role() = 'authenticated' AND user_identifier = auth.uid()::text)
+    OR
+    (auth.role() = 'anon' AND (user_identifier = 'user_001' OR user_identifier LIKE 'device_%' OR user_identifier LIKE 'local_%'))
+);
 
 -- 5. Rate Limiting Function Example (Optional)
 -- You can create a function to prevent spamming the database

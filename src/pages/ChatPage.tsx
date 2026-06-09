@@ -127,6 +127,86 @@ function ConversationPanel({
   );
 }
 
+function renderMessageContent(content: string, isUser: boolean) {
+  const lines = content.split("\n");
+  let inList = false;
+  const elements: React.ReactNode[] = [];
+  let listItems: React.ReactNode[] = [];
+
+  const parseInlineMarkdown = (text: string) => {
+    const parts = text.split(/\*\*([^*]+)\*\*/g);
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        return (
+          <strong key={index} className={`font-semibold ${isUser ? "text-white" : "text-indigo-950 font-bold"}`}>
+            {part}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
+  lines.forEach((line, lineIndex) => {
+    const trimmed = line.trim();
+    const bulletMatch = trimmed.match(/^[*+-]\s+(.*)$/);
+    const numberMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+
+    if (bulletMatch) {
+      if (!inList) {
+        inList = true;
+      }
+      const itemContent = bulletMatch[1];
+      listItems.push(
+        <li key={lineIndex} className="list-disc ml-5 mt-1 leading-relaxed">
+          {parseInlineMarkdown(itemContent)}
+        </li>
+      );
+    } else if (numberMatch) {
+      if (!inList) {
+        inList = true;
+      }
+      const itemContent = numberMatch[2];
+      const num = numberMatch[1];
+      listItems.push(
+        <li key={lineIndex} className="list-decimal ml-5 mt-1 leading-relaxed" value={parseInt(num)}>
+          {parseInlineMarkdown(itemContent)}
+        </li>
+      );
+    } else {
+      if (inList) {
+        elements.push(
+          <ul key={`list-${lineIndex}`} className="space-y-1.5 my-2">
+            {listItems}
+          </ul>
+        );
+        listItems = [];
+        inList = false;
+      }
+
+      if (trimmed) {
+        elements.push(
+          <p key={lineIndex} className="mb-2 last:mb-0 leading-relaxed">
+            {parseInlineMarkdown(trimmed)}
+          </p>
+        );
+      } else {
+        elements.push(<div key={lineIndex} className="h-2" />);
+      }
+    }
+  });
+
+  if (inList && listItems.length > 0) {
+    elements.push(
+      <ul key="list-end" className="space-y-1.5 my-2">
+        {listItems}
+      </ul>
+    );
+  }
+
+  return elements;
+}
+
 // ── Main ChatPage ─────────────────────────────────────────────────────────────
 export default function ChatPage() {
   const {
@@ -313,7 +393,7 @@ export default function ChatPage() {
                         : "bg-white border border-gray-100 shadow-sm text-gray-700 rounded-tl-sm"
                     }`}
                   >
-                    {msg.content}
+                    {renderMessageContent(msg.content, msg.role === "user")}
                     {isStreaming && msg.role === "assistant" && msg.id === lastAiMsgId && (
                       <span className="inline-block w-0.5 h-3.5 bg-violet-400 ml-0.5 animate-pulse align-middle" />
                     )}
