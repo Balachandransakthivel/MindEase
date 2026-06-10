@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Sparkles, MessageCircleHeart, Smile, BookOpen, BarChart3, ShieldCheck, Brain, ArrowRight, Star, Heart } from "lucide-react";
-import heroBg from "@/assets/hero-bg.jpg";
-import aiAvatar from "@/assets/ai-avatar.png";
+import aiAvatar from "@/assets/ai-avatar.svg";
 
 const FEATURES = [
   { icon: MessageCircleHeart, title: "AI Therapist Chat", desc: "24/7 empathetic AI that listens, understands, and responds to your emotional state with care.", color: "from-violet-500 to-purple-600" },

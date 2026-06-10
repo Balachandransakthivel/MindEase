@@ -6,7 +6,7 @@ import {
   Send, RefreshCw, Sparkles, ShieldAlert, Mic, MicOff,
   MessageSquarePlus, History, Trash2, ChevronLeft, X,
 } from "lucide-react";
-import aiAvatar from "@/assets/ai-avatar.png";
+import aiAvatar from "@/assets/ai-avatar.svg";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
