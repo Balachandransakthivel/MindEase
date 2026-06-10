@@ -111,8 +111,8 @@ export default function MoodTrackerPage() {
                 value={value}
                 onChange={(e) => !submitted && setter(Number(e.target.value))}
                 disabled={submitted}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer disabled:cursor-default"
-                style={{ accentColor: color }}
+                className="w-full h-2 rounded-full cursor-pointer disabled:cursor-default"
+                style={{ color, accentColor: color }}
               />
               <div className="flex justify-between text-xs text-gray-300 mt-1">
                 <span>{min}{unit}</span>

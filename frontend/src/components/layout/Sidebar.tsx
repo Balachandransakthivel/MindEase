@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   MessageCircleHeart,
@@ -11,6 +12,8 @@ import {
   X,
   Sparkles,
   Wind,
+  Sun,
+  Moon,
 } from "lucide-react";
 import aiAvatar from "@/assets/ai-avatar.png";
 
@@ -31,6 +34,7 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -70,14 +74,23 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
         {/* User */}
         <div className="px-4 py-4 border-b border-white/10">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/10">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-300 to-indigo-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-              {user?.name?.[0] || "U"}
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-white/10">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-300 to-indigo-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                {user?.name?.[0] || "U"}
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-medium text-sm truncate">{user?.name}</p>
+                <p className="text-white/60 text-xs truncate">{user?.email}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-white font-medium text-sm truncate">{user?.name}</p>
-              <p className="text-white/60 text-xs truncate">{user?.email}</p>
-            </div>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-white/80 hover:text-white transition-all ml-2 flex-shrink-0 flex items-center justify-center"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
           </div>
         </div>
 

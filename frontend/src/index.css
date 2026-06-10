@@ -25,6 +25,28 @@
     --ring: 262 80% 50%;
     --radius: 0.75rem;
   }
+
+  .dark {
+    --background: 240 25% 6%;
+    --foreground: 210 40% 98%;
+    --card: 240 22% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 22% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 22% 15%;
+    --secondary-foreground: 262 60% 80%;
+    --muted: 240 22% 15%;
+    --muted-foreground: 240 5% 70%;
+    --accent: 262 50% 20%;
+    --accent-foreground: 262 80% 90%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 22% 18%;
+    --input: 240 22% 18%;
+    --ring: 262 80% 60%;
+  }
 }
 
 @layer base {
@@ -161,3 +183,137 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Custom styling for range input */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+}
+
+/* Webkit Track */
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0; /* bg-gray-200 */
+  border-radius: 9999px;
+  transition: background 0.15s ease;
+}
+
+.dark input[type="range"]::-webkit-slider-runnable-track {
+  background: #334155; /* bg-slate-700 */
+}
+
+/* Webkit Thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: currentColor;
+  cursor: pointer;
+  margin-top: -5px; /* (8px track height - 18px thumb height) / 2 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Mozilla Firefox Track */
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+}
+
+.dark input[type="range"]::-moz-range-track {
+  background: #334155;
+}
+
+/* Mozilla Firefox Thumb */
+input[type="range"]::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border: none;
+  border-radius: 50%;
+  background: currentColor;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Dark mode styles */
+.dark body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Override utility classes when in dark mode */
+.dark .bg-white {
+  background-color: hsl(var(--card)) !important;
+}
+.dark .bg-gray-50 {
+  background-color: hsl(var(--muted)) !important;
+}
+.dark .bg-gray-100 {
+  background-color: hsl(var(--muted)) !important;
+}
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-violet-100,
+.dark .border-violet-200 {
+  border-color: hsl(var(--border)) !important;
+}
+.dark .text-indigo-950,
+.dark .text-indigo-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-violet-900 {
+  color: hsl(var(--foreground)) !important;
+}
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+.dark .text-gray-400 {
+  color: hsla(var(--muted-foreground) / 0.7) !important;
+}
+.dark .text-gray-300 {
+  color: hsla(var(--muted-foreground) / 0.4) !important;
+}
+.dark .text-violet-700 {
+  color: hsl(var(--primary)) !important;
+}
+.dark .bg-violet-50 {
+  background-color: hsl(var(--accent)) !important;
+}
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: rgb(167, 243, 208) !important;
+}
+.dark .text-emerald-700 {
+  color: rgb(52, 211, 153) !important;
+}
+.dark .border-emerald-100 {
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.dark .bg-indigo-50 {
+  background-color: hsl(var(--accent)) !important;
+}
+.dark .border-indigo-100 {
+  border-color: hsl(var(--border)) !important;
+}
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
