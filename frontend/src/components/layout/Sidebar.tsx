@@ -15,7 +15,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import aiAvatar from "@/assets/ai-avatar.png";
+import aiAvatar from "@/assets/ai-avatar.svg";
 
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
