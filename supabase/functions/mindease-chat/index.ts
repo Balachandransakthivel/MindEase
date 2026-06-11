@@ -31,12 +31,12 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const apiKey = Deno.env.get("ONSPACE_AI_API_KEY");
-    const baseUrl = Deno.env.get("ONSPACE_AI_BASE_URL");
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
+    const baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai";
 
-    if (!apiKey || !baseUrl) {
+    if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
+        JSON.stringify({ error: "GEMINI_API_KEY is not set in Supabase secrets." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -66,7 +66,7 @@ Return ONLY the title, no quotes, no punctuation at the end.`,
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "gemini-2.5-flash",
           messages: titleMessages,
           stream: false,
           temperature: 0.7,
@@ -108,7 +108,7 @@ Provide a brief, personalized AI insight for this journal entry.`,
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "gemini-2.5-flash",
           messages: insightMessages,
           stream: false,
           temperature: 0.8,
@@ -139,7 +139,7 @@ Provide a brief, personalized AI insight for this journal entry.`,
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         messages: aiMessages,
         stream,
         temperature: 0.8,
@@ -174,7 +174,7 @@ Provide a brief, personalized AI insight for this journal entry.`,
   } catch (err) {
     console.error("Edge function error:", err);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: "Internal server error", details: err instanceof Error ? err.message : String(err), stack: err instanceof Error ? err.stack : undefined }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
